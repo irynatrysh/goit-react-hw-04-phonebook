@@ -1,32 +1,25 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm/ContactForm';
-import { ContactList } from './ContactList/ContactList';
-import { Filter } from './Filter/Filter';
+import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
 
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-  componentDidMount() {
-    // Зчитування з локального сховища при завантаженні компоненту
+  useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
     if (storedContacts) {
-      this.setState({ contacts: JSON.parse(storedContacts) });
+      setContacts(JSON.parse(storedContacts));
     }
-  }
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  handleSubmit = ({ name, number }) => {
-    const { contacts } = this.state;
-
+  const handleSubmit = ({ name, number }) => {
     if (contacts.some((contact) => contact.name === name)) {
       alert(`${name} is already in contacts!`);
       return;
@@ -38,43 +31,36 @@ class App extends Component {
       number,
     };
 
-    this.setState((prevState) => ({
-      contacts: prevState.contacts.concat(newContact),
-    }));
+    setContacts((prevContacts) => [...prevContacts, newContact]);
   };
 
-  handleDelete = (id) => {
-    this.setState((prevState) => ({
-      contacts: prevState.contacts.filter((contact) => contact.id !== id),
-    }));
-  };
-
-  handleChangeFilter = (e) => {
-    this.setState({
-      filter: e.target.value,
-    });
-  };
-
-  render() {
-    const { contacts, filter } = this.state;
-    const filteredContacts = contacts.filter((contact) =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
+  const handleDelete = (id) => {
+    setContacts((prevContacts) =>
+      prevContacts.filter((contact) => contact.id !== id)
     );
+  };
 
-    return (
-      <div className="phonebook-frame">
-        <h1>Phonebook</h1>
+  const handleChangeFilter = (e) => {
+    setFilter(e.target.value);
+  };
 
-        <ContactForm onSubmit={this.handleSubmit} />
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
-        <h2>Contacts</h2>
+  return (
+    <div className="phonebook-frame">
+      <h1>Phonebook</h1>
 
-        <Filter value={filter} onChange={this.handleChangeFilter} />
+      <ContactForm onSubmit={handleSubmit} />
 
-        <ContactList contacts={filteredContacts} onDelete={this.handleDelete} />
-      </div>
-    );
-  }
-}
+      <h2>Contacts</h2>
+
+      <Filter value={filter} onChange={handleChangeFilter} />
+
+      <ContactList contacts={filteredContacts} onDelete={handleDelete} />
+    </div>
+  );
+};
 
 export default App;

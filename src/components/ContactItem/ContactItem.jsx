@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListItem, Button, Span, NumberSpan } from './ContactItem.styled';
 
-export const ContactItem = ({ contact, onDelete }) => {
+const ContactItem = ({ contact, onDelete }) => {
   const handleDelete = () => {
     onDelete(contact.id);
   };
@@ -14,3 +14,5 @@ export const ContactItem = ({ contact, onDelete }) => {
     </ListItem>
   );
 };
+
+export default ContactItem;

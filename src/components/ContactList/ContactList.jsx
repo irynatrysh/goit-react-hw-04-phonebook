@@ -1,6 +1,7 @@
-import { ContactItem } from "components/ContactItem/ContactItem"; 
+import React from 'react';
+import ContactItem from '../ContactItem/ContactItem';
 
-export const ContactList = ({ contacts, onDelete }) => {
+const ContactList = ({ contacts, onDelete }) => {
   return (
     <ul>
       {contacts.map((contact) => (
@@ -8,4 +9,6 @@ export const ContactList = ({ contacts, onDelete }) => {
       ))}
     </ul>
   );
-}
+};
+
+export default ContactList;
